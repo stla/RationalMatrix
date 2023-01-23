@@ -166,10 +166,10 @@ Qrange <- function(M) {
 #' UtDU <- QcholUtDU(M)
 #' library(gmp)
 #' U <- as.bigq(UtDU$U)
-#' D <- as.bigq(UtDU$D)
+#' D <- as.bigq(diag(UtDU$D))
 #' perm <- UtDU$perm
 #' UP <- U[, perm]
-#' t(UP) %*% diag(D) %*% UP # this is `M`
+#' t(UP) %*% D %*% UP # this is `M`
 QcholUtDU <- function(M) {
   M <- checkM(M, TRUE)
   dec <- UtDU_rcpp(M)

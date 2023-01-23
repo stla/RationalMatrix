@@ -17,7 +17,7 @@ The Cholesky-'UtDU' decomposition of \code{M} in a list
 \description{
 Cholesky-'UtDU' decomposition of a symmetric rational matrix.
 }
-\details{
+\note{
 Symmetry is not checked! Only the lower triangular part of 
   \code{M} is used.
 }
@@ -29,8 +29,8 @@ M <- crossprod(x)
 UtDU <- QcholUtDU(M)
 library(gmp)
 U <- as.bigq(UtDU$U)
-D <- as.bigq(UtDU$D)
+D <- as.bigq(diag(UtDU$D))
 perm <- UtDU$perm
 UP <- U[, perm]
-t(UP) \%*\% diag(D) \%*\% UP # this is `M`
+t(UP) \%*\% D \%*\% UP # this is `M`
 }
