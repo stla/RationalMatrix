@@ -160,7 +160,7 @@ unsigned rank_rcpp(CharMatrix M) {
 // -------------------------------------------------------------------------- //
 /* UtDU --------------------------------------------------------------------- */
 // [[Rcpp::export]]
-Rcpp::List UtDU(CharMatrix M) {
+Rcpp::List UtDU_rcpp(CharMatrix M) {
   const QMatrix Mq = charMatrix2qMatrix(M);
   const Eigen::LDLT<QMatrix> ldltOfM(Mq);
   if(ldltOfM.info() != Eigen::Success) {
