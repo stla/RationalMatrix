@@ -23,3 +23,20 @@ isFraction <- function(x) {
     }
   }
 }
+
+checkM <- function(M) {
+  if(is.matrixZQ(M)) {
+    M <- as.character(M)
+    if(anyNA(M)) {
+      stop("Found missing values in `M`.")
+    }
+  } else {
+    stopifnot(is.matrix(M))
+    storage.mode(M) <- "character"
+    check <- all(vapply(M, isFraction, logical(1L)))
+    if(!check) {
+      stop("Invalid matrix `M`.")
+    }
+  }
+  M
+}

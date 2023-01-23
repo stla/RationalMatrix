@@ -11,7 +11,7 @@ Qdet(M)
 a quoted integer or a quoted fraction for each entry \code{Mij}}
 }
 \value{
-A quoted rational number representing the determinant.
+A string: quoted rational number representing the determinant.
 }
 \description{
 Determinant of a square matrix with rational entries.
