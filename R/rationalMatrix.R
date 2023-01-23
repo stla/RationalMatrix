@@ -166,7 +166,9 @@ Qrange <- function(M) {
 #' UtDU <- QcholUtDU(M)
 #' library(gmp)
 #' U <- as.bigq(UtDU$U)
-#' D <- as.bigq(diag(UtDU$D))
+#' D <- matrix("0", 3L, 3L)
+#' diag(D) <- UtDU$D
+#' D <- as.bigq(D)
 #' perm <- UtDU$perm
 #' UP <- U[, perm]
 #' t(UP) %*% D %*% UP # this is `M`
