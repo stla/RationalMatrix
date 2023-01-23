@@ -66,3 +66,39 @@ Rcpp::String Qdet_rcpp(CharMatrix M) {
   mpq_rational d = Mq.determinant();
   return q2str(d);
 }
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+/* image LU ----------------------------------------------------------------- */
+// [[Rcpp::export]]
+CharMatrix image_LU(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  return qMatrix2charMatrix(lu.image(Mq));
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+/* injective, surjective, invertible ---------------------------------------- */
+// [[Rcpp::export]]
+bool isInjective(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  return lu.isInjective();
+}
+
+// [[Rcpp::export]]
+bool isSurjective(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  return lu.isSurjective();
+}
+
+// [[Rcpp::export]]
+bool isInvertible(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  return lu.isInvertible();
+}
