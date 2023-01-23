@@ -3,6 +3,7 @@
 #include "RationalMatrix_types.h"
 using namespace boost::multiprecision;
 typedef Eigen::Matrix<mpq_rational, Eigen::Dynamic, Eigen::Dynamic> QMatrix;
+typedef Eigen::Matrix<mpq_rational, Eigen::Dynamic, 1>              QVector;
 
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
@@ -44,6 +45,7 @@ QMatrix charMatrix2qMatrix(CharMatrix M) {
   return Mq;
 }
 
+
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
 CharMatrix qMatrix2charMatrix(const QMatrix& Mq) {
@@ -57,6 +59,19 @@ CharMatrix qMatrix2charMatrix(const QMatrix& Mq) {
   }
   return M;
 }
+
+
+// ------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------- //
+Rcpp::CharacterVector qVector2charVector(const QVector& Vq) {
+  const int m = Vq.rows();
+  Rcpp::CharacterVector V(m);
+  for(int i = 0; i < m; i++) {
+    V(i) = q2str(Vq.coeff(i, 0));
+  }
+  return V;
+}
+
 
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
@@ -72,7 +87,7 @@ Rcpp::String Qdet_rcpp(CharMatrix M) {
 // -------------------------------------------------------------------------- //
 /* image LU ----------------------------------------------------------------- */
 // [[Rcpp::export]]
-CharMatrix image_LU(CharMatrix M) {
+CharMatrix image_rcpp(CharMatrix M) {
   QMatrix Mq = charMatrix2qMatrix(M);
   const Eigen::FullPivLU<QMatrix> lu(Mq);
   return qMatrix2charMatrix(lu.image(Mq));
@@ -83,22 +98,87 @@ CharMatrix image_LU(CharMatrix M) {
 // -------------------------------------------------------------------------- //
 /* injective, surjective, invertible ---------------------------------------- */
 // [[Rcpp::export]]
-bool isInjective(CharMatrix M) {
+bool isInjective_rcpp(CharMatrix M) {
   QMatrix Mq = charMatrix2qMatrix(M);
   const Eigen::FullPivLU<QMatrix> lu(Mq);
   return lu.isInjective();
 }
 
 // [[Rcpp::export]]
-bool isSurjective(CharMatrix M) {
+bool isSurjective_rcpp(CharMatrix M) {
   QMatrix Mq = charMatrix2qMatrix(M);
   const Eigen::FullPivLU<QMatrix> lu(Mq);
   return lu.isSurjective();
 }
 
 // [[Rcpp::export]]
-bool isInvertible(CharMatrix M) {
+bool isInvertible_rcpp(CharMatrix M) {
   QMatrix Mq = charMatrix2qMatrix(M);
   const Eigen::FullPivLU<QMatrix> lu(Mq);
   return lu.isInvertible();
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+/* inverse ------------------------------------------------------------------ */
+// [[Rcpp::export]]
+CharMatrix inverse_rcpp(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  if(lu.isInvertible()) {
+    return qMatrix2charMatrix(lu.inverse());
+  } else {
+    throw Rcpp::exception("The matrix is not invertible.");
+  }
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+/* kernel LU ----------------------------------------------------------------- */
+// [[Rcpp::export]]
+CharMatrix kernel_rcpp(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  return qMatrix2charMatrix(lu.kernel());
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+/* rank LU ----------------------------------------------------------------- */
+// [[Rcpp::export]]
+unsigned rank_rcpp(CharMatrix M) {
+  QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::FullPivLU<QMatrix> lu(Mq);
+  return lu.rank();
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+/* UtDU --------------------------------------------------------------------- */
+// [[Rcpp::export]]
+Rcpp::List UtDU(CharMatrix M) {
+  const QMatrix Mq = charMatrix2qMatrix(M);
+  const Eigen::LDLT<QMatrix> ldltOfM(Mq);
+  if(ldltOfM.info() != Eigen::Success) {
+    throw Rcpp::exception("Factorization has failed.");
+  }
+  const QMatrix U = ldltOfM.matrixU();
+  const QVector D = ldltOfM.vectorD();
+  const Eigen::Transpositions<Eigen::Dynamic> T = ldltOfM.transpositionsP();
+  Eigen::VectorXi perm(T.size());
+  for(auto i = 0; i < T.size(); i++) {
+    perm(i) = i;
+  }
+  Rcpp::List out = Rcpp::List::create(
+    Rcpp::Named("U") = qMatrix2charMatrix(U), 
+    Rcpp::Named("D") = qVector2charVector(D),
+    Rcpp::Named("perm") = T * perm
+  );
+  bool positive = ldltOfM.isPositive();
+  out.attr("positive") = positive;
+  return out;
 }
