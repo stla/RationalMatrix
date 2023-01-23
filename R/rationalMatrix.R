@@ -10,8 +10,7 @@
 #' M <- cbind(c("1/2", "3"), c("5/3", "-2/7"))
 #' Qdet(M)
 Qdet <- function(M) {
-  stopifnot(nrow(M) == ncol(M))
-  M <- checkM(M)
+  M <- checkM(M, TRUE)
   det_rcpp(M)
 }
 
@@ -69,8 +68,7 @@ QisSurjective <- function(M) {
 #' M <- matrix(rpois(25L, 1), 5L, 5L)
 #' QisInvertible(M)
 QisInvertible <- function(M) {
-  stopifnot(nrow(M) == ncol(M))
-  M <- checkM(M)
+  M <- checkM(M, TRUE)
   isInvertible_rcpp(M)
 }
 
@@ -157,7 +155,7 @@ Qrange <- function(M) {
 #'   (see example).
 #' @export
 #' 
-#' @details Symmetry is not checked! Only the lower triangular part of 
+#' @note Symmetry is not checked! Only the lower triangular part of 
 #'   \code{M} is used.
 #'
 #' @examples 
