@@ -24,7 +24,7 @@ isFraction <- function(x) {
   }
 }
 
-checkM <- function(M) {
+checkM <- function(M, square = FALSE) {
   if(is.matrixZQ(M)) {
     M <- as.character(M)
     if(anyNA(M)) {
@@ -37,6 +37,9 @@ checkM <- function(M) {
     if(!check) {
       stop("Invalid matrix `M`.")
     }
+  }
+  if(square) {
+    stopifnot(nrow(M) == ncol(M))
   }
   M
 }
