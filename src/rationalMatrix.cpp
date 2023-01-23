@@ -76,7 +76,7 @@ Rcpp::CharacterVector qVector2charVector(const QVector& Vq) {
 // ------------------------------------------------------------------------- //
 // ------------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::String Qdet_rcpp(CharMatrix M) {
+Rcpp::String det_rcpp(CharMatrix M) {
   QMatrix Mq = charMatrix2qMatrix(M);
   mpq_rational d = Mq.determinant();
   return q2str(d);
