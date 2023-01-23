@@ -128,3 +128,53 @@ Qkernel <- function(M) {
   kernel_rcpp(M)
 }
 
+#' @title Range of a rational matrix
+#' @description Range (column-space, image, span) of a rational matrix.
+#' 
+#' @template Mtemplate
+#'
+#' @return A character matrix representing a basis of the range of \code{M}. 
+#'   Note that this basis is not orthogonal.
+#' @export
+#' 
+#' @examples 
+#' library(RationalMatrix)
+#' set.seed(666L)
+#' M <- matrix(rpois(15L, 6), 3L, 5L)
+#' Qrange(M)
+Qrange <- function(M) {
+  M <- checkM(M)
+  image_rcpp(M)
+}
+
+#' @title 'UtDU' decomposition of a rational matrix
+#' 
+#' @description Cholesky-'UtDU' decomposition of a symmetric rational matrix.
+#'
+#' @template squareMtemplate
+#'
+#' @return The Cholesky-'UtDU' decomposition of \code{M} in a list 
+#'   (see example).
+#' @export
+#' 
+#' @details Symmetry is not checked! Only the lower triangular part of 
+#'   \code{M} is used.
+#'
+#' @examples 
+#' library(RationalMatrix)
+#' x <- matrix(c(1:5, (1:5)^2), 5, 2)
+#' x <- cbind(x, x[, 1L] + 3L*x[, 2L])
+#' M <- crossprod(x)
+#' UtDU <- QcholUtDU(M)
+#' library(gmp)
+#' U <- as.bigq(UtDU$U)
+#' D <- as.bigq(UtDU$D)
+#' perm <- UtDU$perm
+#' UP <- U[, perm]
+#' t(UP) %*% diag(D) %*% UP # this is `M`
+QcholUtDU <- function(M) {
+  M <- checkM(M, TRUE)
+  dec <- UtDU_rcpp(M)
+  dec[["perm"]] <- dec[["perm"]] + 1L
+  dec
+}
