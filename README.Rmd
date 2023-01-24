@@ -1,0 +1,40 @@
+---
+title: "The 'RationalMatrix' package"
+output: github_document
+---
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/stla/RationalMatrix/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/stla/RationalMatrix/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check-valgrind](https://github.com/stla/RationalMatrix/actions/workflows/R-CMD-check-valgrind.yaml/badge.svg)](https://github.com/stla/RationalMatrix/actions/workflows/R-CMD-check-valgrind.yaml)
+<!-- badges: end -->
+
+*Exact matrix algebra for matrices with rational entries.*
+
+```{r}
+library(RationalMatrix)
+```
+
+```{r sim, echo=FALSE, message=FALSE}
+library(gmp)
+set.seed(666L)
+numers  <- rpois(16L, 5)
+denoms <- 1L + rpois(16L, 2)
+fractions <- paste0(numers, "/", denoms)
+M <- as.character(as.bigq(matrix(fractions, nrow = 4L, ncol = 4L)))
+```
+
+```{r, collapse=TRUE}
+# a rational matrix
+M
+
+# determinant
+Qdet(M)
+
+# inverse
+Qinverse(M)
+
+# check
+library(gmp)
+as.bigq(M) %*% as.bigq(Qinverse(M))
+```
+
