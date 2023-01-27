@@ -3,3 +3,4 @@
 ^\.github$
 ^man-roxygen$
 ^cran-comments\.md$
+^README\.Rmd$
